@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package user;
+//指定了 Go 语言代码生成后应该放置在名为 "github.com/rn-consider/grpcservice/helloworld" 的包中,
+//会影响生成的 .pb.go 文件的 package 声明
+option go_package = "github.com/rn-consider/grpcservice/protos/user";
+
+service User {
+  rpc CreateUser (CreateUserRequest) returns (UserResponse);
+  rpc GetUser (GetUserRequest) returns (UserResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UserResponse);
+  rpc DeleteUser (DeleteUserRequest) returns (UserResponse);
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string email = 2;
+}
+
+message GetUserRequest {
+  uint64 user_id = 1;
+}
+
+message UpdateUserRequest {
+  uint64 user_id = 1;
+  string new_username = 2;
+  string new_email = 3;
+}
+
+message DeleteUserRequest {
+  uint64 user_id = 1;
+}
+
+message UserResponse {
+  uint64 user_id = 1;
+  string username = 2;
+  string email = 3;
+}

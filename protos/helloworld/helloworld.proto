@@ -1,0 +1,44 @@
+
+syntax = "proto3";
+//指定了 Go 语言代码生成后应该放置在名为 "github.com/rn-consider/grpcservice/helloworld" 的包中,
+//会影响生成的 .pb.go 文件的 package 声明
+option go_package = "github.com/rn-consider/grpcservice/helloworld";
+option java_multiple_files = true;
+option java_package = "io.helloworld_server.examples.helloworld_server";
+option java_outer_classname = "HelloWorldProto";
+
+package helloworld;
+
+// 此处定义服务,为协议缓冲区中的服务定义
+service Greeter {
+  /*
+  提供SayHello函数,接受HelloRequest类型的消息,
+  返回HelloReply类型的消息在grpc中,函数必须始终具有输入消息并返回输出消息
+  */
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  // Sends another greeting
+  rpc SayHelloAgain (HelloRequest) returns (HelloReply) {}
+
+}
+
+// 要求传入参数必须要name
+message HelloRequest {
+  /*
+  字段的设计十分重要,应谨慎分配字段编号,切勿更改,且在设计时考虑未来的修订
+  消息中的字段定义必须指定三件事:类型,名称,编号
+  字段的类型可以是当前支持的整数类型(int32,int64等),float,double,bool,字符串,字节(用于任何数据)
+  要注意的是字段名称必须全部小写,并使用_分隔多个单词.
+  如first_name,字段编号表示字段在消息中的位置,如name = 1表示name在返回信息中占第一位
+  字段编号可以从1到2^29
+  推荐在字段编号内留下间距,例如将第一个字段编号为1,然后将10用于下一个字段
+  这意味着可在稍后添加任何其他字段而不需要对字段进行编号
+  */
+  string name = 1;
+}
+
+// 要求返回参数必须要是message
+message HelloReply {
+  string message = 1;
+}
