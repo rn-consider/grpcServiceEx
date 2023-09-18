@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/rn-consider/grpcservice/dao"
 	"github.com/rn-consider/grpcservice/protos/helloworld"
 	"github.com/rn-consider/grpcservice/protos/user"
@@ -26,6 +27,24 @@ func registerServices(s *grpc.Server) {
 func startServer(s *grpc.Server, l net.Listener) error {
 	return s.Serve(l)
 }
+func UnaryServerInterceptor(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (interface{}, error) {
+	log.Printf("--> unary interceptor:%s ", info.FullMethod)
+	return handler(ctx, req)
+}
+
+func StreamServerInterceptor(
+	srv interface{},
+	stream grpc.ServerStream,
+	info *grpc.StreamServerInfo,
+	handler grpc.StreamHandler,
+) error {
+	log.Printf("--> stream interceptor: %s", info.FullMethod)
+	return handler(srv, stream)
+}
 func main() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -48,7 +67,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(UnaryServerInterceptor),
+		grpc.StreamInterceptor(StreamServerInterceptor),
+	)
 	registerServices(s)
 
 	// 输出服务器启动信息
